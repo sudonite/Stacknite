@@ -169,6 +169,9 @@ dev-services-delete:
 # ==============================================================================
 # Administration
 
+fingerprints:
+	go run app/cli/update-fingerprints/main.go
+
 # ==============================================================================
 # Metrics and Tracing
 
