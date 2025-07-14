@@ -149,7 +149,8 @@ dev-update-apply: build dev-load dev-apply
 dev-logs: dev-logs-webdetect dev-logs-db dev-logs-grafana
 
 dev-logs-webdetect:
-	kubectl logs --namespace=$(NAMESPACE) -l app=$(WEBDETECT_APP) --all-containers=true -f --tail=100 --max-log-requests=6 | go run api/tooling/logfmt/main.go -service=$(WEBDETECT_APP)
+	kubectl logs --namespace=$(NAMESPACE) -l app=$(WEBDETECT_APP) --all-containers=true -f --tail=100 --max-log-requests=6 \
+	| go run api/tooling/logfmt/main.go -service=$(WEBDETECT_APP)
 
 dev-logs-db:
 	kubectl logs --namespace=$(NAMESPACE) -l app=database --all-containers=true -f --tail=100
@@ -177,6 +178,20 @@ fingerprints:
 
 # ==============================================================================
 # Running tests within the local computer
+
+test:
+	go test ./... -cpu 1,2,4 -p 1 -v
+
+test-cover:
+	go test ./... -cover
+
+test-cover-detail:
+	go test ./... -coverprofile=coverage.out
+	go tool cover -func=coverage.out
+	rm -rf coverage.out
+
+test-clean:
+	go clean -testcache
 
 # ==============================================================================
 # Hitting endpoints
@@ -222,4 +237,8 @@ help:
 	@echo "  dev-logs-db             Show the logs for the db service"
 	@echo "  dev-logs-grafana        Show the logs for the grafana service"
 	@echo "  dev-services-delete     Delete all"
+	@echo "  test                    Run all test"
+	@echo "  test-cover              Show test coverage"
+	@echo "  test-cover-detail       Show test coverage details for each function"
+	@echo "  test-clean              Clear go test's"
 	@echo "  tidy                    Run go tidy and vendor"
